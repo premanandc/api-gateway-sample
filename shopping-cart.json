@@ -1,0 +1,21 @@
+{
+  "id": "f11173d1-74a6-53d5-6b18-0d190ff19c6f",
+  "name": "Shopping Cart",
+  "timestamp": 1469051590134,
+  "requests": [
+    {
+      "collectionId": "f11173d1-74a6-53d5-6b18-0d190ff19c6f",
+      "id": "20f54259-e686-bc93-a6ed-fc535443e484",
+      "name": "Checkout",
+      "description": "Full checkout flow",
+      "url": "http://localhost:9090/checkout",
+      "method": "POST",
+      "headers": "Content-Type: application/json\n",
+      "data": "{\n\"id\": \"First\",\n\"lineItems\": [\n  {\"name\":\"Gold\", \"price\":10},\n  {\"name\":\"Watch\", \"price\":10},\n  {\"name\":\"Golf Club\", \"price\":20}\n]\n}",
+      "dataMode": "raw",
+      "timestamp": 0,
+      "version": 2,
+      "time": 1469051812580
+    }
+  ]
+}
