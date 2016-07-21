@@ -4,13 +4,13 @@ import com.premonition.web.Message;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.client.Netty4ClientHttpRequestFactory;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.channel.MessageChannels;
 import org.springframework.integration.dsl.http.Http;
 import org.springframework.integration.gateway.MessagingGatewaySupport;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.web.client.RestTemplate;
 
 import static java.util.stream.Collectors.joining;
 import static org.springframework.http.HttpMethod.POST;
@@ -26,11 +26,6 @@ public class Application {
     }
 
     @Bean
-    public AsyncClientHttpRequestFactory asyncClientFactory() {
-        return new Netty4ClientHttpRequestFactory();
-    }
-
-    @Bean
     public MessagingGatewaySupport inboundGateway() {
         return Http.inboundGateway("/checkout")
                 .requestMapping(
@@ -40,6 +35,11 @@ public class Application {
                 )
                 .requestChannel(inputChannel())
                 .get();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate(new Netty4ClientHttpRequestFactory());
     }
 
     @Bean
@@ -82,7 +82,7 @@ public class Application {
     @Bean
     public IntegrationFlow createShoppingCart() {
         return f -> f.channel(shoppingCartChannel())
-                .handle(outboundGateway("http://localhost:8080/api/shopping-cart")
+                .handle(outboundGateway("http://localhost:8080/api/shopping-cart", restTemplate())
                         .httpMethod(POST)
                         .expectedResponseType(String.class));
     }
@@ -90,7 +90,7 @@ public class Application {
     @Bean
     public IntegrationFlow addLineItem() {
         return f -> f.channel(addLineItemChannel())
-                .handle(outboundGateway("http://localhost:8080/api/add-line-item")
+                .handle(outboundGateway("http://localhost:8080/api/add-line-item", restTemplate())
                         .httpMethod(POST)
                         .expectedResponseType(String.class));
     }
@@ -98,7 +98,7 @@ public class Application {
     @Bean
     public IntegrationFlow checkout() {
         return f -> f.channel(checkoutChannel())
-                .handle(outboundGateway("http://localhost:8080/api/checkout")
+                .handle(outboundGateway("http://localhost:8080/api/checkout", restTemplate())
                         .httpMethod(POST)
                         .expectedResponseType(String.class));
     }
